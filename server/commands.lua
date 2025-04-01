@@ -15,6 +15,7 @@ QBCore.Commands.Add(Config.commands.addCoins.cmd, Config.commands.addCoins.dsc, 
                     sendToDiscord("["..xPlayer.PlayerData.license.."] has added "..amount.." coins to "..xTarget.PlayerData.charinfo.firstname.." "..xTarget.PlayerData.charinfo.lastname.." ["..xTarget.PlayerData.license.."]")
                     TriggerClientEvent('QBCore:Notify', xPlayer.PlayerData.source, 'Has añadido '..amount..' coins a '..xTarget.PlayerData.charinfo.firstname..' '..xTarget.PlayerData.charinfo.lastname, 'success')
                     TriggerClientEvent('QBCore:Notify', xTarget.PlayerData.source, 'Has recibido '..amount..' coins de '..xPlayer.PlayerData.charinfo.firstname..' '..xPlayer.PlayerData.charinfo.lastname, 'success')
+                    xTarget.Functions.SetPlayerData('coins', xTarget.PlayerData.coins + amount)
                 end
             end)
         else
@@ -40,6 +41,7 @@ QBCore.Commands.Add(Config.commands.removeCoins.cmd, Config.commands.removeCoins
                     sendToDiscord("["..xPlayer.PlayerData.license.."] has removed "..amount.." coins to "..xTarget.PlayerData.charinfo.firstname.." "..xTarget.PlayerData.charinfo.lastname.." ["..xTarget.PlayerData.license.."]")
                     TriggerClientEvent('QBCore:Notify', xPlayer.PlayerData.source, 'Has removido '..amount..' coins a '..xTarget.PlayerData.charinfo.firstname..' '..xTarget.PlayerData.charinfo.lastname, 'success')
                     TriggerClientEvent('QBCore:Notify', xTarget.PlayerData.source, 'Te retiraron x'..amount..' coins STAFF: '..GetPlayerName(xPlayer.PlayerData.source), 'error')
+                    xTarget.Functions.SetPlayerData('coins', xTarget.PlayerData.coins - amount)
                 end
             end)
         else
@@ -65,6 +67,7 @@ QBCore.Commands.Add(Config.commands.setCoins.cmd, Config.commands.setCoins.dsc, 
                     sendToDiscord("["..xPlayer.PlayerData.license.."] has set "..amount.." coins to "..xTarget.PlayerData.charinfo.firstname.." "..xTarget.PlayerData.charinfo.lastname.." ["..xTarget.PlayerData.license.."]")
                     TriggerClientEvent('QBCore:Notify', xPlayer.PlayerData.source, 'Has establecido '..amount..' coins a '..xTarget.PlayerData.charinfo.firstname..' '..xTarget.PlayerData.charinfo.lastname, 'success')
                     TriggerClientEvent('QBCore:Notify', xTarget.PlayerData.source, 'Tus coins han sido establecidos a '..amount..' por '..xPlayer.PlayerData.charinfo.firstname..' '..xPlayer.PlayerData.charinfo.lastname, 'success')
+                    xTarget.Functions.SetPlayerData('coins', amount)
                 end
             end)
         else
@@ -94,6 +97,7 @@ QBCore.Commands.Add(Config.commands.addMembership.cmd, Config.commands.addMember
                 MySQL.Async.execute('UPDATE players SET membership = @membership WHERE license = @license', {['@membership'] = rank, ['@license'] = target}, function(rowsChanged)
                     if rowsChanged > 0 then
                         sendToDiscord("["..xPlayer.PlayerData.license.."] has added "..rank.." membership to "..target)
+                        
                         TriggerClientEvent('QBCore:Notify', xPlayer.PlayerData.source, 'Has añadido '..rank..' membresía a '..target, 'success')
                     end
                 end)
@@ -111,6 +115,7 @@ QBCore.Commands.Add(Config.commands.addMembership.cmd, Config.commands.addMember
                 if xTarget then
                     MySQL.Async.execute('UPDATE players SET membership = @membership WHERE citizenid = @citizenid', {['@membership'] = rank, ['@citizenid'] = xTarget.PlayerData.citizenid}, function(rowsChanged)
                         if rowsChanged > 0 then
+                            xTarget.Functions.SetPlayerData('membership', rank)
                             sendToDiscord("["..xPlayer.PlayerData.license.."] has added "..rank.." membership to "..xTarget.PlayerData.charinfo.firstname.." "..xTarget.PlayerData.charinfo.lastname.." ["..xTarget.PlayerData.license.."]")
                             TriggerClientEvent('QBCore:Notify', xPlayer.PlayerData.source, 'Has añadido '..rank..' membresía a '..xTarget.PlayerData.charinfo.firstname..' '..xTarget.PlayerData.charinfo.lastname, 'success')
                             TriggerClientEvent('QBCore:Notify', xTarget.PlayerData.source, 'Has recibido membresía '..rank..' de '..xPlayer.PlayerData.charinfo.firstname..' '..xPlayer.PlayerData.charinfo.lastname, 'success')
@@ -160,6 +165,7 @@ QBCore.Commands.Add(Config.commands.removeMembership.cmd, Config.commands.remove
                         sendToDiscord("["..xPlayer.PlayerData.license.."] has removed membership to "..xTarget.PlayerData.charinfo.firstname.." "..xTarget.PlayerData.charinfo.lastname.." ["..xTarget.PlayerData.license.."]")
                         TriggerClientEvent('QBCore:Notify', xPlayer.PlayerData.source, 'Has removido membresía a '..xTarget.PlayerData.charinfo.firstname..' '..xTarget.PlayerData.charinfo.lastname, 'success')
                         TriggerClientEvent('QBCore:Notify', xTarget.PlayerData.source, 'Tu membresía acaba de ser revocada', 'error')
+                        xTarget.Functions.SetPlayerData('membership', nil)
                     end
                 end)
             else
